@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
+#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
@@ -122,6 +123,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
       if (shouldCheckForUpdate) {
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
+          [EXUpdatesAppController.sharedInstance.logger timeEnd:@"loaderTask"];
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
       } else {

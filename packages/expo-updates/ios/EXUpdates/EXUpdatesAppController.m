@@ -71,6 +71,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+    _logger = [EXUpdatesLogger new];
   }
   return self;
 }
@@ -107,6 +108,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)start
 {
   NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
+
+  [self.logger warnWithCode:EXUpdatesErrorCodeNone message:@"Testing EXUpdatesLogger: EXUpdatesAppController started"];
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
@@ -160,6 +163,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                                selectionPolicy:self.selectionPolicy
                                                  delegateQueue:_controllerQueue];
   _loaderTask.delegate = self;
+  [self.logger timeStart:@"loaderTask"];
   [_loaderTask start];
 }
 
@@ -168,7 +172,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   UIView *view = nil;
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-  
+
   if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     view = views.firstObject;
@@ -184,7 +188,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     view = [UIView new];
     view.backgroundColor = [UIColor whiteColor];
   }
-  
+
   if (window.rootViewController == nil) {
       UIViewController *rootViewController = [UIViewController new];
       window.rootViewController = rootViewController;

@@ -4,18 +4,20 @@ import Dispatch
 
 public let log = Logger(category: "expo")
 
-public class Logger {
+@objc(EXLogger)
+public class Logger : NSObject {
   #if DEBUG || EXPO_CONFIGURATION_DEBUG
   private var minLevel: LogType = .trace
   #else
   private var minLevel: LogType = .info
   #endif
 
-  private let category: String
+  private var category: String = "main"
 
   private var handlers: [LogHandler] = []
 
   init(category: String = "main") {
+    super.init()
     self.category = category
 
     if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
@@ -118,7 +120,7 @@ public class Logger {
   /**
    Starts the timer to measure how much time the following operations take.
    */
-  public func timeStart(_ id: String) {
+  @objc public func timeStart(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -129,7 +131,7 @@ public class Logger {
   /**
    Stops the timer and logs how much time elapsed since it started.
    */
-  public func timeEnd(_ id: String) {
+  @objc public func timeEnd(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -138,7 +140,7 @@ public class Logger {
       return
     }
     let endTime = DispatchTime.now()
-    let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
+    let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000_000
     log(type: .timer, "Timer '\(id)' has finished in: \(diff) seconds")
     timers.removeValue(forKey: id)
   }
@@ -157,6 +159,47 @@ public class Logger {
 
   public func category(_ category: String) -> Logger {
     return Logger(category: category)
+  }
+
+  // MARK: - Objective C wrappers
+
+  // Objective C instance creation method
+  @objc public class func newInstance(category: String = "main") -> Logger {
+    return Logger(category: category)
+  }
+
+  // Objective C can't do Swift variadic arguments,
+  // so we will just pass in messages and error codes
+  @objc public func trace(code: Int = 0, message: String) {
+    log(type: .trace, code, message)
+  }
+
+  @objc public func debug(code: Int = 0, message: String) {
+    log(type: .debug, code, message)
+  }
+
+  @objc public func info(code: Int = 0, message: String) {
+    log(type: .info, code, message)
+  }
+
+  @objc public func warn(code: Int = 0, message: String) {
+    log(type: .warn, code, message)
+  }
+
+  @objc public func error(code: Int = 0, message: String) {
+    log(type: .error, code, message)
+  }
+
+  @objc public func fatal(code: Int = 0, message: String) {
+    log(type: .fatal, code, message)
+  }
+
+  // Objective C does not support generic ReturnType, so we will just
+  // support timing for void methods, add more as needed
+  @objc public func time(_ id: String, _ closure: () -> Void) {
+    timeStart(id)
+    closure()
+    timeEnd(id)
   }
 
   // MARK: - Private logging functions

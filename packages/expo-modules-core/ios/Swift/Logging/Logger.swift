@@ -194,14 +194,6 @@ public class Logger : NSObject {
     log(type: .fatal, code, message)
   }
 
-  // Objective C does not support generic ReturnType, so we will just
-  // support timing for void methods, add more as needed
-  @objc public func time(_ id: String, _ closure: () -> Void) {
-    timeStart(id)
-    closure()
-    timeEnd(id)
-  }
-
   // MARK: - Private logging functions
 
   private func log(type: LogType = .trace, _ items: [Any]) {

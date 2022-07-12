@@ -1,9 +1,4 @@
-//
-//  EXUpdatesLogEntry.h
-//  ASN1Decoder
-//
-//  Created by Douglas Lowder on 7/8/22.
-//
+// Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 

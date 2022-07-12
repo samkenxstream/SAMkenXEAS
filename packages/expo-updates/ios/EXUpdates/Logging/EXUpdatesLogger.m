@@ -18,7 +18,6 @@
 - (void)errorWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
 - (void)fatalWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
 
-- (void)time:(NSString * _Nonnull)id :(void (^ _Nonnull)(void))closure;
 - (void)timeStart:(NSString * _Nonnull)idString;
 - (void)timeEnd:(NSString * _Nonnull)idString;
 
@@ -68,11 +67,6 @@
 - (void)fatalWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
   [self.logger fatalWithCode:code message:message];
-}
-
-- (void)time:(NSString * _Nonnull)idString :(void (^ _Nonnull)(void))closure
-{
-  [self.logger time:idString :closure];
 }
 
 - (void)timeStart:(NSString *)idString

@@ -9,17 +9,17 @@
 @interface EXLogger
 
 // This class method is the only way to create an instance
-+ (EXLogger * _Nonnull)newInstanceWithCategory:(NSString * _Nonnull)category;
++ (EXLogger * _Nonnull)newInstance:(NSString * _Nonnull)category;
 
-- (void)traceWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
-- (void)debugWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
-- (void)infoWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
-- (void)warnWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
-- (void)errorWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
-- (void)fatalWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
+- (void)timeStart:(NSString * _Nonnull)id;
+- (void)timeEnd:(NSString * _Nonnull)id;
 
-- (void)timeStart:(NSString * _Nonnull)idString;
-- (void)timeEnd:(NSString * _Nonnull)idString;
+- (void)trace:(NSString * _Nonnull)message code:(NSInteger)code;
+- (void)debug:(NSString * _Nonnull)message code:(NSInteger)code;
+- (void)info:(NSString * _Nonnull)message code:(NSInteger)code;
+- (void)warn:(NSString * _Nonnull)message code:(NSInteger)code;
+- (void)error:(NSString * _Nonnull)message code:(NSInteger)code;
+- (void)fatal:(NSString * _Nonnull)message code:(NSInteger)code;
 
 @end
 
@@ -34,39 +34,39 @@
 - (instancetype)init
 {
   if (self == [super init]) {
-    self.logger = [EXLogger newInstanceWithCategory:@"expo-updates"];
+    self.logger = [EXLogger newInstance:@"expo-updates"];
   }
   return self;
 }
 
 - (void)traceWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger traceWithCode:code message:message];
+  [self.logger trace:message code:code];
 }
 
 - (void)debugWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger debugWithCode:code message:message];
+  [self.logger debug:message code:code];
 }
 
 - (void)infoWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger infoWithCode:code message:message];
+  [self.logger info:message code:code];
 }
 
 - (void)warnWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger warnWithCode:code message:message];
+  [self.logger warn:message code:code];
 }
 
 - (void)errorWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger errorWithCode:code message:message];
+  [self.logger error:message code:code];
 }
 
 - (void)fatalWithCode:(NSInteger)code message:(NSString * _Nonnull)message
 {
-  [self.logger fatalWithCode:code message:message];
+  [self.logger fatal:message code:code];
 }
 
 - (void)timeStart:(NSString *)idString

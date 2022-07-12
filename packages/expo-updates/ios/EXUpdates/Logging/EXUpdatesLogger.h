@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)errorWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
 - (void)fatalWithCode:(NSInteger)code message:(NSString * _Nonnull)message;
 
-- (void)time:(NSString * _Nonnull)idString :(void (^ _Nonnull)(void))closure;
 - (void)timeStart:(NSString * _Nonnull)idString;
 - (void)timeEnd:(NSString * _Nonnull)idString;
 

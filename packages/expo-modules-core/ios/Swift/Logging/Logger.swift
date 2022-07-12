@@ -120,7 +120,7 @@ public class Logger : NSObject {
   /**
    Starts the timer to measure how much time the following operations take.
    */
-  @objc public func timeStart(_ id: String) {
+  @objc(timeStart:) public func timeStart(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -131,7 +131,7 @@ public class Logger : NSObject {
   /**
    Stops the timer and logs how much time elapsed since it started.
    */
-  @objc public func timeEnd(_ id: String) {
+  @objc(timeEnd:) public func timeEnd(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -140,8 +140,8 @@ public class Logger : NSObject {
       return
     }
     let endTime = DispatchTime.now()
-    let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000_000
-    log(type: .timer, "Timer '\(id)' has finished in: \(diff) seconds")
+    let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
+    log(type: .timer, "Timer '\(id)' has finished in: \(diff) ms")
     timers.removeValue(forKey: id)
   }
 
@@ -164,33 +164,33 @@ public class Logger : NSObject {
   // MARK: - Objective C wrappers
 
   // Objective C instance creation method
-  @objc public class func newInstance(category: String = "main") -> Logger {
+  @objc(newInstance:) public class func newInstance(category: String = "main") -> Logger {
     return Logger(category: category)
   }
 
   // Objective C can't do Swift variadic arguments,
   // so we will just pass in messages and error codes
-  @objc public func trace(code: Int = 0, message: String) {
+  @objc(trace:code:) public func trace(message: String, code: Int = 0) {
     log(type: .trace, code, message)
   }
 
-  @objc public func debug(code: Int = 0, message: String) {
+  @objc(debug:code:) public func debug(message: String, code: Int = 0) {
     log(type: .debug, code, message)
   }
 
-  @objc public func info(code: Int = 0, message: String) {
+  @objc(info:code:) public func info(message: String, code: Int = 0) {
     log(type: .info, code, message)
   }
 
-  @objc public func warn(code: Int = 0, message: String) {
+  @objc(warn:code:) public func warn(message: String, code: Int = 0) {
     log(type: .warn, code, message)
   }
 
-  @objc public func error(code: Int = 0, message: String) {
+  @objc(error:code:) public func error(message: String, code: Int = 0) {
     log(type: .error, code, message)
   }
 
-  @objc public func fatal(code: Int = 0, message: String) {
+  @objc(fatal:code:) public func fatal(message: String, code: Int = 0) {
     log(type: .fatal, code, message)
   }
 

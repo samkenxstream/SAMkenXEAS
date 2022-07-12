@@ -1,6 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -190,6 +191,12 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 - (void)_crash
 {
+  for (id error in self->_encounteredErrors) {
+    NSDictionary *normalized = [self normalizeError:error];
+    NSString *normalizedString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:normalized options:NSJSONWritingSortedKeys error:nil] encoding:NSUTF8StringEncoding];
+    [EXUpdatesAppController.sharedInstance.logger errorWithCode:EXUpdatesErrorRecoveryTaskCrash message:[NSString stringWithFormat:@"EXUpdatesErrorRecovery: %@",normalizedString]];
+  }
+
   // create new exception object from stack of errors
   // use the initial error and put the rest into userInfo
   id initialError = _encounteredErrors[0];
@@ -201,6 +208,17 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     _previousFatalExceptionHandler(initialError);
   }
 
+  NSDictionary *normalizedInitialError = [self normalizeError:initialError];
+  NSString *name = normalizedInitialError[@"name"];
+  NSString *reason = normalizedInitialError[@"reason"];
+  NSMutableDictionary *userInfo = normalizedInitialError[@"userInfo"];
+
+  userInfo[@"EXUpdatesLaterEncounteredErrors"] = [_encounteredErrors copy];
+  [_delegate throwException:[NSException exceptionWithName:name reason:reason userInfo:userInfo]];
+}
+
+- (NSDictionary *)normalizeError:(id)initialError
+{
   NSString *name;
   NSString *reason;
   NSMutableDictionary *userInfo;
@@ -217,9 +235,11 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   } else {
     NSAssert(NO, @"Shouldn't add object types other than NSError or NSException to _encounteredErrors");
   }
-
-  userInfo[@"EXUpdatesLaterEncounteredErrors"] = [_encounteredErrors copy];
-  [_delegate throwException:[NSException exceptionWithName:name reason:reason userInfo:userInfo]];
+  return @{
+    @"name": name,
+    @"reason": reason,
+    @"userInfo": userInfo
+  };
 }
 
 # pragma mark - monitoring / lifecycle
@@ -238,6 +258,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 - (void)_handleJavaScriptDidFailToLoad
 {
+  [EXUpdatesAppController.sharedInstance.logger errorWithCode:EXUpdatesErrorCodeUpdateFailedToLoad message:@"EXUpdatesErrorRecovery: JS failed to load."];
   [self _unregisterObservers];
 }
 

@@ -13,6 +13,12 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
@@ -71,7 +77,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
-    _logger = [EXUpdatesLogger new];
+    _logger = [[EXUpdatesLogger alloc] init];
   }
   return self;
 }
@@ -109,7 +115,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 {
   NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
 
-  [self.logger warnWithCode:EXUpdatesErrorCodeNone message:@"Testing EXUpdatesLogger: EXUpdatesAppController started"];
+  [self.logger warn:@"Testing EXUpdatesLogger: EXUpdatesAppController started" code:EXUpdatesErrorCodeNone];
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];

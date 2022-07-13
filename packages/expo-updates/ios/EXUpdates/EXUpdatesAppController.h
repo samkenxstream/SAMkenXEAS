@@ -7,9 +7,10 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <EXUpdates/EXUpdatesLogger.h>
 
 #import <React/RCTBridge.h>
+
+@class EXUpdatesLogger;
 
 NS_ASSUME_NONNULL_BEGIN
 

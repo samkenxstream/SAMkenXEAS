@@ -3,9 +3,16 @@
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
+#import <EXUpdates/EXUpdatesLogEntry.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -194,7 +201,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   for (id error in self->_encounteredErrors) {
     NSDictionary *normalized = [self normalizeError:error];
     NSString *normalizedString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:normalized options:NSJSONWritingSortedKeys error:nil] encoding:NSUTF8StringEncoding];
-    [EXUpdatesAppController.sharedInstance.logger errorWithCode:EXUpdatesErrorRecoveryTaskCrash message:[NSString stringWithFormat:@"EXUpdatesErrorRecovery: %@",normalizedString]];
+    [EXUpdatesAppController.sharedInstance.logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery: %@",normalizedString] code:EXUpdatesErrorRecoveryTaskCrash];
   }
 
   // create new exception object from stack of errors
@@ -258,7 +265,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 - (void)_handleJavaScriptDidFailToLoad
 {
-  [EXUpdatesAppController.sharedInstance.logger errorWithCode:EXUpdatesErrorCodeUpdateFailedToLoad message:@"EXUpdatesErrorRecovery: JS failed to load."];
+  [EXUpdatesAppController.sharedInstance.logger error:@"EXUpdatesErrorRecovery: JS failed to load." code:EXUpdatesErrorCodeUpdateFailedToLoad];
   [self _unregisterObservers];
 }
 

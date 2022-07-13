@@ -5,7 +5,7 @@ import os.log
 /**
  An enum with available log types.
  */
-public enum LogType: Int {
+@objc public enum LogType: Int {
   case trace = 0
   case timer = 1
   case stacktrace = 2

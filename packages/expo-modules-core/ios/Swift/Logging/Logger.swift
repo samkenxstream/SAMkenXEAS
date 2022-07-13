@@ -38,6 +38,14 @@ public class Logger : NSObject {
   // MARK: - Public logging functions
 
   /**
+   Exposed for use by Swift wrappers
+    Application code should call one of the LogType-specific methods below
+   */
+  public func log(type: LogType = .trace, _ items: Any...) {
+    log(type: type, items)
+  }
+
+  /**
    The most verbose log level that captures all the details about the behavior of the implementation.
    It is mostly diagnostic and is more granular and finer than `debug` log level.
    These logs should not be committed to the repository and are ignored in the release builds.
@@ -211,10 +219,6 @@ public class Logger : NSObject {
         handler.log(type: type, message)
       }
     }
-  }
-
-  private func log(type: LogType = .trace, _ items: Any...) {
-    log(type: type, items)
   }
 }
 

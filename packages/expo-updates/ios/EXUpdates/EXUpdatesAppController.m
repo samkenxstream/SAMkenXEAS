@@ -115,7 +115,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 {
   NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
 
+  // Test writing a log message
   [self.logger warn:@"Testing EXUpdatesLogger: EXUpdatesAppController started" code:EXUpdatesErrorCodeNone];
+
+  // Test the log reader
+  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+  NSArray<NSString *> * entries = [reader getLogEntries];
+  for (NSString * entry in entries) {
+    NSLog(@"EXUpdatesLogReader: %@", entry);
+  }
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];

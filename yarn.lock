@@ -407,15 +407,7 @@
     "@babel/helper-plugin-utils" "^7.16.7"
     "@babel/plugin-syntax-export-default-from" "^7.16.7"
 
-"@babel/plugin-proposal-export-namespace-from@^7.12.13", "@babel/plugin-proposal-export-namespace-from@^7.17.12":
-  version "7.17.12"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-export-namespace-from/-/plugin-proposal-export-namespace-from-7.17.12.tgz#b22864ccd662db9606edb2287ea5fd1709f05378"
-  integrity sha512-j7Ye5EWdwoXOpRmo5QmRyHPsDIe6+u70ZYZrd7uz+ebPYFKfRcLcNu3Ro0vOlJ5zuv8rU7xa+GttNiRzX56snQ==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.17.12"
-    "@babel/plugin-syntax-export-namespace-from" "^7.8.3"
-
-"@babel/plugin-proposal-export-namespace-from@^7.18.6":
+"@babel/plugin-proposal-export-namespace-from@^7.12.13", "@babel/plugin-proposal-export-namespace-from@^7.17.12", "@babel/plugin-proposal-export-namespace-from@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-export-namespace-from/-/plugin-proposal-export-namespace-from-7.18.6.tgz#1016f0aa5ab383bbf8b3a85a2dcaedf6c8ee7491"
   integrity sha512-zr/QcUlUo7GPo6+X1wC98NJADqmy5QTFWWhqeQWiki4XHafJtLl/YMGkmRB2szDD2IYJCCdBTd4ElwhId9T7Xw==
@@ -1277,6 +1269,11 @@
     xcode "^3.0.1"
     xml2js "0.4.23"
 
+"@expo/config-types@^45.0.0":
+  version "45.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/config-types/-/config-types-45.0.0.tgz#963c2fdce8fbcbd003758b92ed8a25375f437ef6"
+  integrity sha512-/QGhhLWyaGautgEyU50UJr5YqKJix5t77ePTwreOVAhmZH+ff3nrrtYTTnccx+qF08ZNQmfAyYMCD3rQfzpiJA==
+
 "@expo/config@6.0.23":
   version "6.0.23"
   resolved "https://registry.yarnpkg.com/@expo/config/-/config-6.0.23.tgz#512514b5fd5d5e9d2787bf04a0e795cca470c3c3"
@@ -1652,10 +1649,10 @@
   resolved "https://registry.yarnpkg.com/@expo/xcodegen/-/xcodegen-2.18.0-patch.1.tgz#40514e973ee6769e5abd5d1c16d40dbe85c1d9aa"
   integrity sha512-Caz2ChzVe/U3GkaK+DKlXqYorARzLZ1yM6D03LHvasnyA4T+pW6DGXHPy7cfK5AlbsV6Fi5ZtZ9gqW4jGWIFwQ==
 
-"@expo/xcpretty@^4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@expo/xcpretty/-/xcpretty-4.1.3.tgz#cbe04f654571c0ee733dbe729d5593b3bcfbf487"
-  integrity sha512-testj0jpEe1IwRfnmQ3shizTXOY6IGcuMJg1vtmXy2bC9sPTLK1wjliRJp2xCJGcp1ZbEA1/eptzX+6MDnYjrA==
+"@expo/xcpretty@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@expo/xcpretty/-/xcpretty-4.2.1.tgz#c5e2bd6e5255e83514f4f956cc2c942923fa96b1"
+  integrity sha512-pOUshZ2CFcwL/q0FfCDIt773u7/s3fg0W0K3FkiACePP8Qa0X+8ZngHN/d9xqefpeePeiIZtfU/Rcddjl8ZSkQ==
   dependencies:
     "@babel/code-frame" "7.10.4"
     chalk "^4.1.0"
@@ -3433,12 +3430,12 @@
     recyclerlistview "4.0.1"
     tslib "2.4.0"
 
-"@shopify/react-native-skia@0.1.134":
-  version "0.1.134"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.134.tgz#9ecfbe8298b206bb02e94e07aa4301fe55583cc1"
-  integrity sha512-VXyAKOkIwgo5d7zuwh0upAAs7klm7A4YTThx8bwzh+FOHar9mPzdT8vitBQzzrqkOqCcc80jfH8xZ5ePrVgTIQ==
+"@shopify/react-native-skia@0.1.136":
+  version "0.1.136"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.136.tgz#cb399cd1216dfc14ad3cca226e6d0450b1e7ab7c"
+  integrity sha512-gNsBw9/ISNL7tAHdfhjeW3Y9/FPN93mPx4XSJS7xwbEgYaJdBP+1T1MyCCZZZTTcqJ6bCVp9FFUR6yo0u93Pgg==
   dependencies:
-    canvaskit-wasm "^0.34.0"
+    canvaskit-wasm "^0.35.0"
     react-reconciler "^0.26.2"
 
 "@sideway/address@^4.1.3":
@@ -4871,6 +4868,11 @@
     "@webassemblyjs/ast" "1.9.0"
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
+
+"@webgpu/types@^0.1.20":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@webgpu/types/-/types-0.1.21.tgz#b181202daec30d66ccd67264de23814cfd176d3a"
+  integrity sha512-pUrWq3V5PiSGFLeLxoGqReTZmiiXwY3jRkIG5sLLKjyqNxrwm/04b4nw7LSmGWJcKk59XOM/YRTUwOzo4MMlow==
 
 "@wojtekmaj/enzyme-adapter-react-17@^0.6.3":
   version "0.6.7"
@@ -6486,10 +6488,12 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001358:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001358.tgz#473d35dabf5e448b463095cab7924e96ccfb8c00"
   integrity sha512-hvp8PSRymk85R20bsDra7ZTCpSVGN/PAz9pSAjPSjKC+rNmnUk5vCRgJwiTT/O4feQ/yu/drvZYpKxxhbFuChw==
 
-canvaskit-wasm@^0.34.0:
-  version "0.34.1"
-  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.34.1.tgz#dc8a4c0378e92d9541be8b9dd1c4abe69354cf4d"
-  integrity sha512-8qdrp0RO8wRUGTpn2JyfbBxsc5auSSTcHu4p2aazbmL7n15PzSpuZR5TKIg8xuVqqezclzLY2x/HEDSAuxmIxQ==
+canvaskit-wasm@^0.35.0:
+  version "0.35.0"
+  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.35.0.tgz#90afc625958367f4a27907fb8c03240045933a46"
+  integrity sha512-y/eTJ4xoIBkKzD37aQAvBL451LIp9YiB8Vs1e8J3Qwe7WcTHsAD00E5WocPzZo+0+XaSCkJ6cS/BxBDXTSnW1g==
+  dependencies:
+    "@webgpu/types" "^0.1.20"
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -11248,6 +11252,11 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
+
+inherits@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.1.tgz#b17d08d326b4423e568eff719f91b0b1cbdf69f1"
+  integrity sha512-8nWq2nLTAwd02jTqJExUYFSD/fKq6VH9Y/oG2accc/kdI0V98Bag8d5a4gi3XHz73rDWa2PvTtvcWYquKqSENA==
 
 inherits@2.0.3:
   version "2.0.3"
@@ -17141,10 +17150,10 @@ react-native-safe-modules@^1.0.3:
   dependencies:
     dedent "^0.6.0"
 
-react-native-screens@~3.14.1:
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.14.1.tgz#9eca8ef524cc0466701779498d128d820cc06f69"
-  integrity sha512-QkaiYEx5kuAkLjfN+AmR7FC9jyzohqnc5T1PBi35oZtGiLMoyTJIzyep/g8458++WvDwm0vismIifaNHsWFyHg==
+react-native-screens@~3.15.0:
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.15.0.tgz#78e42c8df72851b1ff235ddf5434b961ae123ca5"
+  integrity sha512-ezC5TibsUYyqPuuHpZoM3iEl6bRzCVBMJeGaFkn7xznuOt1VwkZVub0BvafIEYR/+AQC/RjxzMSQPs1qal0+wA==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
@@ -20297,7 +20306,28 @@ util.promisify@~1.0.0:
     has-symbols "^1.0.1"
     object.getownpropertydescriptors "^2.1.0"
 
-util@0.10.3, util@^0.10.3, util@^0.11.0, util@^0.12.0, util@~0.12.4:
+util@0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/util/-/util-0.10.3.tgz#7afb1afe50805246489e3db7fe0ed379336ac0f9"
+  integrity sha512-5KiHfsmkqacuKjkRkdV7SsfDJ2EGiPsK92s2MhNSY0craxjTdKTtqKsJaCWp4LW33ZZ0OPUv1WO/TFvNQRiQxQ==
+  dependencies:
+    inherits "2.0.1"
+
+util@^0.10.3:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
+  integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
+  dependencies:
+    inherits "2.0.3"
+
+util@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/util/-/util-0.11.1.tgz#3236733720ec64bb27f6e26f421aaa2e1b588d61"
+  integrity sha512-HShAsny+zS2TZfaXxD9tYj4HQGlBezXZMZuM/S5PKLLoZkShZiGk9o5CzukI1LVHZvjdvZ2Sj1aW/Ndn2NB/HQ==
+  dependencies:
+    inherits "2.0.3"
+
+util@^0.12.0:
   version "0.12.4"
   resolved "https://registry.yarnpkg.com/util/-/util-0.12.4.tgz#66121a31420df8f01ca0c464be15dfa1d1850253"
   integrity sha512-bxZ9qtSlGUWSOy9Qa9Xgk11kSslpuZwaxCg4sNIDj6FLucDab2JxnHwyNTCpHMtK1MjoQiWQ6DiUMZYbSrO+Sw==

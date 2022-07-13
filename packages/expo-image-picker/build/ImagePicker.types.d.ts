@@ -206,6 +206,15 @@ export declare type ImageInfo = {
      */
     uri: string;
     /**
+     * The unique ID that represents the picked image or video. It can be used by [expo-media-library](./media-library)
+     * to manage the picked asset.
+     *
+     * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+     *
+     * @platform ios
+     */
+    assetId?: string | null;
+    /**
      * Width of the image or video.
      */
     width: number;
@@ -217,6 +226,19 @@ export declare type ImageInfo = {
      * The type of the asset.
      */
     type?: 'image' | 'video';
+    /**
+     * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+     * or user gave limited permission to access the media library.
+     *
+     * @platform ios
+     */
+    fileName?: string | null;
+    /**
+     * File size of the picked image or video, in bytes.
+     *
+     * @platform ios
+     */
+    fileSize?: number;
     /**
      * The `exif` field is included if the `exif` option is truthy, and is an object containing the
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the

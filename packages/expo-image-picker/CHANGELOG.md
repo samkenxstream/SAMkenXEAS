@@ -6,15 +6,23 @@
 
 ### 🎉 New features
 
+- On iOS 14+ added support for selection limit and on iOS 15+ for ordered selection. ([#18142](https://github.com/expo/expo/pull/18142), [#18143](https://github.com/expo/expo/pull/18143) by [@barthap](https://github.com/barthap))
+- On iOS, the picker now resolves file name, size and media library asset ID. ([#18179](https://github.com/expo/expo/pull/18179), [#18185](https://github.com/expo/expo/pull/18185) by [@barthap](https://github.com/barthap))
+- On Android added support for selecting multiple images/videos. ([#18161](https://github.com/expo/expo/pull/18161) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.2.1 — 2022-07-11
+
+_This version does not introduce any user-facing changes._
 
 ## 13.2.0 — 2022-07-07
 
 ### 🎉 New features
 
-- On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102) by [@barthap](https://github.com/barthap))
+- On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102), [#18138](https://github.com/expo/expo/pull/18138), [#18145](https://github.com/expo/expo/pull/18145) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 

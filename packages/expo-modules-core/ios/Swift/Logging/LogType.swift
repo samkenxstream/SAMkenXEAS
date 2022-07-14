@@ -15,6 +15,27 @@ import os.log
   case error = 6
   case fatal = 7
 
+  public var asString: String {
+    switch self {
+    case .trace:
+      return "trace"
+    case .timer:
+      return "timer"
+    case .stacktrace:
+      return "stacktrace"
+    case .debug:
+      return "debug"
+    case .info:
+      return "info"
+    case .warn:
+      return "warn"
+    case .error:
+      return "error"
+    case .fatal:
+      return "fatal"
+    }
+  }
+
   /**
    The string that is used to prefix the messages of this log type.
    Logs in Xcode and Console apps are always with the white text,

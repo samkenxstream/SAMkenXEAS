@@ -4,20 +4,21 @@ import Dispatch
 
 public let log = Logger(category: "expo")
 
-@objc(EXLogger)
-public class Logger : NSObject {
+public class Logger {
   #if DEBUG || EXPO_CONFIGURATION_DEBUG
   private var minLevel: LogType = .trace
   #else
   private var minLevel: LogType = .info
   #endif
 
-  private var category: String = "main"
+  private var category: String
 
   private var handlers: [LogHandler] = []
 
-  init(category: String = "main") {
-    super.init()
+  /**
+   Exposed for use by Swift wrappers
+   */
+  public init(category: String) {
     self.category = category
 
     if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
@@ -128,7 +129,7 @@ public class Logger : NSObject {
   /**
    Starts the timer to measure how much time the following operations take.
    */
-  @objc(timeStart:) public func timeStart(_ id: String) {
+  public func timeStart(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -139,7 +140,7 @@ public class Logger : NSObject {
   /**
    Stops the timer and logs how much time elapsed since it started.
    */
-  @objc(timeEnd:) public func timeEnd(_ id: String) {
+  public func timeEnd(_ id: String) {
     guard LogType.timer.rawValue >= minLevel.rawValue else {
       return
     }
@@ -169,39 +170,6 @@ public class Logger : NSObject {
     return Logger(category: category)
   }
 
-  // MARK: - Objective C wrappers
-
-  // Objective C instance creation method
-  @objc(newInstance:) public class func newInstance(category: String = "main") -> Logger {
-    return Logger(category: category)
-  }
-
-  // Objective C can't do Swift variadic arguments,
-  // so we will just pass in messages and error codes
-  @objc(trace:code:) public func trace(message: String, code: Int = 0) {
-    log(type: .trace, code, message)
-  }
-
-  @objc(debug:code:) public func debug(message: String, code: Int = 0) {
-    log(type: .debug, code, message)
-  }
-
-  @objc(info:code:) public func info(message: String, code: Int = 0) {
-    log(type: .info, code, message)
-  }
-
-  @objc(warn:code:) public func warn(message: String, code: Int = 0) {
-    log(type: .warn, code, message)
-  }
-
-  @objc(error:code:) public func error(message: String, code: Int = 0) {
-    log(type: .error, code, message)
-  }
-
-  @objc(fatal:code:) public func fatal(message: String, code: Int = 0) {
-    log(type: .fatal, code, message)
-  }
-
   // MARK: - Private logging functions
 
   private func log(type: LogType = .trace, _ items: [Any]) {
@@ -222,11 +190,11 @@ public class Logger : NSObject {
   }
 }
 
-fileprivate func reformatStackSymbol(_ symbol: String) -> String {
+private func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
 }
 
-fileprivate func describe(value: Any) -> String {
+private func describe(value: Any) -> String {
   if let value = value as? String {
     return value
   }

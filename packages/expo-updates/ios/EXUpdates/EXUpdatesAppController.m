@@ -119,11 +119,13 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   [self.logger warn:@"Testing EXUpdatesLogger: EXUpdatesAppController started" code:EXUpdatesErrorCodeNone];
 
   // Test the log reader
-  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
-  NSArray<NSString *> * entries = [reader getLogEntries];
-  for (NSString * entry in entries) {
-    NSLog(@"EXUpdatesLogReader: %@", entry);
-  }
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+    NSArray<NSString *> * entries = [reader getLogEntries];
+    for (NSString * entry in entries) {
+      NSLog(@"EXUpdatesLogReader: %@", entry);
+    }
+  });
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];

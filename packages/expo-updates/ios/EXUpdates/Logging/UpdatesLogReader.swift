@@ -7,7 +7,14 @@ import OSLog
 
 import ExpoModulesCore
 
-@objc(EXUpdatesLogReader) public class UpdatesLogReader: NSObject {
+@objc(EXUpdatesLogReader)
+public class UpdatesLogReader: NSObject {
+
+  /**
+   Get expo-updates logs for the last hour.
+   Returns an Objective-C NSArray of NSStrings
+   Apart from timer starts and stops, the strings are all in the JSON format of UpdatesLogEntry
+   */
   @objc public func getLogEntries() -> NSArray {
     let result = NSMutableArray()
     do {
@@ -19,14 +26,19 @@ import ExpoModulesCore
         // Fetch log objects.
         let allEntries = try logStore.getEntries(at: oneHourAgo)
 
-        // Filter the log to be relevant for our specific subsystem
-        // and remove other elements (signposts, etc).
+        // Filter the log to select our subsystem and the expo-updates category
         let allEntriesMessages = allEntries
             .compactMap { $0 as? OSLogEntryLog }
             .filter { $0.subsystem == "dev.expo.modules" }
-            .compactMap { $0.composedMessage as String }
+            .filter { $0.category == "expo-updates" }
+            .compactMap { $0.composedMessage }
         for entry in allEntriesMessages.enumerated() {
-          result.add(entry)
+          // Extract the log messages and remove the two initial characters
+          // added by ExpoModulesCore.Logger handler
+          // Accumulate the result as an NSString
+          let rawMessage = entry.element as String
+          let jsonStart = rawMessage.index(rawMessage.startIndex, offsetBy: 2)
+          result.add(String(rawMessage.suffix(from: jsonStart)) as NSString)
         }
       } else {
         result.add("getLogEntries not available in this version of iOS")

@@ -6,7 +6,10 @@ import Foundation
 
 import ExpoModulesCore
 
-@objc(EXUpdatesErrorCode) public enum UpdatesErrorCode: Int {
+// MARK: - Error code enum
+
+@objc(EXUpdatesErrorCode)
+public enum UpdatesErrorCode: Int {
   case None = 0
   case NoUpdatesAvailable = 1
   case UpdateAssetsNotAvailable = 2
@@ -38,22 +41,150 @@ import ExpoModulesCore
   }
 }
 
+// MARK: - Schema for JSON in log messages
+
 struct UpdatesLogEntry: Codable {
   var message: String
-  var code: String
-  var updateId: String
-  var assetId: String
+  var code: String // One of the UpdatesErrorCode string values above
+  var updateId: String // EAS update ID, if any
+  var assetId: String // EAS asset ID, if any
+  var level: String // One of the ExpoModulesCore.LogType string values
 }
 
-@objc(EXUpdatesLogger) public class UpdatesLogger: NSObject {
-  private var logger: ExpoModulesCore.Logger;
+// MARK: - UpdatesLogger class
+
+@objc(EXUpdatesLogger)
+public class UpdatesLogger: NSObject {
+  private var logger: ExpoModulesCore.Logger
 
   @objc override public init() {
-    logger = Logger.newInstance(category: "expo-updates")
+    logger = Logger(category: "expo-updates")
     super.init()
   }
 
-  @objc(log:code:level:update:asset:) public func log(
+  // MARK: - Public logging functions
+
+  @objc(trace:code:updateId:assetId:)
+  public func trace(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .trace, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(trace:code:)
+  public func trace(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    trace(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(debug:code:updateId:assetId:)
+  public func debug(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .debug, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(debug:code:)
+  public func debug(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    debug(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(info:code:updateId:assetId:)
+  public func info(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .info, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(info:code:)
+  public func info(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    info(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(warn:code:updateId:assetId:)
+  public func warn(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(warn:code:)
+  public func warn(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    warn(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(error:code:updateId:assetId:)
+  public func error(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .error, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(error:code:)
+  public func error(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    error(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(fatal:code:updateId:assetId:)
+  public func fatal(
+    message: String,
+    code: UpdatesErrorCode = .None,
+    updateId: String?,
+    assetId: String?
+  ) {
+    log(message: message, code: code, level: .fatal, updateId: updateId, assetId: assetId)
+  }
+
+  @objc(fatal:code:)
+  public func fatal(
+    message: String,
+    code: UpdatesErrorCode = .None
+  ) {
+    fatal(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(timeStart:)
+  public func timeStart(idString: String) {
+    logger.timeStart(idString)
+  }
+
+  @objc(timeEnd:)
+  public func timeEnd(idString: String) {
+    logger.timeEnd(idString)
+  }
+
+  // MARK: - Private logging implementation
+
+  func log(
     message: String,
     code: UpdatesErrorCode = .None,
     level: ExpoModulesCore.LogType = .trace,
@@ -61,7 +192,7 @@ struct UpdatesLogEntry: Codable {
     assetId: String?
   ) {
     do {
-      let logEntry = UpdatesLogEntry(message: message, code: code.asString, updateId: updateId ?? "", assetId: assetId ?? "")
+      let logEntry = UpdatesLogEntry(message: message, code: code.asString, updateId: updateId ?? "", assetId: assetId ?? "", level: level.asString)
       let jsonEncoder = JSONEncoder()
       let jsonData = try jsonEncoder.encode(logEntry)
       let jsonString = String(data: jsonData, encoding: .utf8)
@@ -71,107 +202,5 @@ struct UpdatesLogEntry: Codable {
     }
   }
 
-  @objc(trace:code:updateId:assetId:) public func trace(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .trace, updateId: updateId, assetId: assetId)
-  }
 
-  @objc(trace:code:) public func trace(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    trace(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(debug:code:updateId:assetId:) public func debug(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .debug, updateId: updateId, assetId: assetId)
-  }
-
-  @objc(debug:code:) public func debug(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    debug(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(info:code:updateId:assetId:) public func info(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .info, updateId: updateId, assetId: assetId)
-  }
-
-  @objc(info:code:) public func info(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    info(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(warn:code:updateId:assetId:) public func warn(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
-  }
-
-  @objc(warn:code:) public func warn(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    warn(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(error:code:updateId:assetId:) public func error(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .error, updateId: updateId, assetId: assetId)
-  }
-
-  @objc(error:code:) public func error(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    error(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(fatal:code:updateId:assetId:) public func fatal(
-    message: String,
-    code: UpdatesErrorCode = .None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    log(message: message, code: code, level: .fatal, updateId: updateId, assetId: assetId)
-  }
-
-  @objc(fatal:code:) public func fatal(
-    message: String,
-    code: UpdatesErrorCode = .None
-  ) {
-    fatal(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  @objc(timeStart:) public func timeStart(idString: String) {
-    logger.timeStart(idString);
-  }
-
-  @objc(timeEnd:) public func timeEnd(idString: String) {
-    logger.timeEnd(idString);
-  }
 }

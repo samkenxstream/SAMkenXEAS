@@ -44,11 +44,12 @@ public enum UpdatesErrorCode: Int {
 // MARK: - Schema for JSON in log messages
 
 struct UpdatesLogEntry: Codable {
+  var timestamp: UInt // seconds since 1/1/1970 UTC
   var message: String
   var code: String // One of the UpdatesErrorCode string values above
+  var level: String // One of the ExpoModulesCore.LogType string values
   var updateId: String // EAS update ID, if any
   var assetId: String // EAS asset ID, if any
-  var level: String // One of the ExpoModulesCore.LogType string values
 }
 
 // MARK: - UpdatesLogger class
@@ -192,7 +193,14 @@ public class UpdatesLogger: NSObject {
     assetId: String?
   ) {
     do {
-      let logEntry = UpdatesLogEntry(message: message, code: code.asString, updateId: updateId ?? "", assetId: assetId ?? "", level: level.asString)
+      let logEntry = UpdatesLogEntry(
+        timestamp: UInt(Date().timeIntervalSince1970),
+        message: message,
+        code: code.asString,
+        level: level.asString,
+        updateId: updateId ?? "",
+        assetId: assetId ?? ""
+      )
       let jsonEncoder = JSONEncoder()
       let jsonData = try jsonEncoder.encode(logEntry)
       let jsonString = String(data: jsonData, encoding: .utf8)

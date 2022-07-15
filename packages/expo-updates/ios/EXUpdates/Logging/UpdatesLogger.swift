@@ -43,13 +43,34 @@ public enum UpdatesErrorCode: Int {
 
 // MARK: - Schema for JSON in log messages
 
-struct UpdatesLogEntry: Codable {
+public struct UpdatesLogEntry: Codable {
   var timestamp: UInt // seconds since 1/1/1970 UTC
   var message: String
   var code: String // One of the UpdatesErrorCode string values above
   var level: String // One of the ExpoModulesCore.LogType string values
   var updateId: String // EAS update ID, if any
   var assetId: String // EAS asset ID, if any
+
+  public func asString() -> String? {
+    do {
+      let jsonEncoder = JSONEncoder()
+      let jsonData = try jsonEncoder.encode(self)
+      return String(data: jsonData, encoding: .utf8) ?? nil
+    } catch {
+      return nil
+    }
+  }
+
+  public static func create(from: String) -> UpdatesLogEntry? {
+    do {
+      let jsonDecoder = JSONDecoder()
+      guard let jsonData = from.data(using: .utf8) else { return nil }
+      let logEntry: UpdatesLogEntry = try jsonDecoder.decode(UpdatesLogEntry.self, from: jsonData)
+      return logEntry
+    } catch {
+      return nil
+    }
+  }
 }
 
 // MARK: - UpdatesLogger class
@@ -192,22 +213,15 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    do {
-      let logEntry = UpdatesLogEntry(
-        timestamp: UInt(Date().timeIntervalSince1970),
-        message: message,
-        code: code.asString,
-        level: level.asString,
-        updateId: updateId ?? "",
-        assetId: assetId ?? ""
-      )
-      let jsonEncoder = JSONEncoder()
-      let jsonData = try jsonEncoder.encode(logEntry)
-      let jsonString = String(data: jsonData, encoding: .utf8)
-      logger.log(type: level, jsonString!)
-    } catch {
-      logger.log(type: level, "Unable to JSON-encode message" + message)
-    }
+    let logEntry = UpdatesLogEntry(
+      timestamp: UInt(Date().timeIntervalSince1970),
+      message: message,
+      code: code.asString,
+      level: level.asString,
+      updateId: updateId ?? "",
+      assetId: assetId ?? ""
+    )
+    logger.log(type: level, logEntry.asString() ?? logEntry.message)
   }
 
 

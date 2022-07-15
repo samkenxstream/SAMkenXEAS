@@ -16,15 +16,19 @@ public class UpdatesLogReader: NSObject {
    Apart from timer starts and stops, the strings are all in the JSON format of UpdatesLogEntry
    */
   @objc public func getLogEntries() -> NSArray {
+    return getLogEntries(newerThan: Date().addingTimeInterval(-3600))
+  }
+
+  @objc public func getLogEntries(newerThan: Date) -> NSArray {
     let result = NSMutableArray()
     do {
       if #available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *) {
         let logStore = try OSLogStore(scope: .currentProcessIdentifier)
-        // Get all the logs from the last hour.
-        let oneHourAgo = logStore.position(date: Date().addingTimeInterval(-3600))
+        // Get all the logs since the given date.
+        let position = logStore.position(date: newerThan)
 
         // Fetch log objects.
-        let allEntries = try logStore.getEntries(at: oneHourAgo)
+        let allEntries = try logStore.getEntries(at: position)
 
         // Filter the log to select our subsystem and the expo-updates category
         let allEntriesMessages = allEntries

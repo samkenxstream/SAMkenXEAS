@@ -8,12 +8,6 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
-#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
-#import <EXUpdates/EXUpdates-Swift.h>
-#else
-#import "EXUpdates-Swift.h"
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
@@ -129,7 +123,6 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
       if (shouldCheckForUpdate) {
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
-          [EXUpdatesAppController.sharedInstance.logger timeEnd:@"loaderTask"];
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
       } else {

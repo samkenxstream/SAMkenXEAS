@@ -200,7 +200,6 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   for (id error in self->_encounteredErrors) {
     NSDictionary *normalized = [self normalizeError:error];
     NSString *normalizedString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:normalized options:NSJSONWritingSortedKeys error:nil] encoding:NSUTF8StringEncoding];
-    [EXUpdatesAppController.sharedInstance.logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery: %@",normalizedString] code:EXUpdatesErrorCodeUpdateFailedToLoad];
   }
   // create new exception object from stack of errors
   // use the initial error and put the rest into userInfo
@@ -263,7 +262,6 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 - (void)_handleJavaScriptDidFailToLoad
 {
-  [EXUpdatesAppController.sharedInstance.logger error:@"EXUpdatesErrorRecovery: JS failed to load." code:EXUpdatesErrorCodeUpdateFailedToLoad];
   [self _unregisterObservers];
 }
 

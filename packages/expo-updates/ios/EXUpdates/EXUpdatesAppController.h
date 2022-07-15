@@ -10,8 +10,6 @@
 
 #import <React/RCTBridge.h>
 
-@class EXUpdatesLogger;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class EXUpdatesAppController;
@@ -62,7 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
-@property (nonnull, nonatomic, readonly, strong) EXUpdatesLogger *logger;
 
 + (instancetype)sharedInstance;
 

@@ -81,12 +81,9 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 {
   NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
   if (!configPath) {
-    /*
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
                                  userInfo:@{}];
-      */
-    return [[self class] configWithDictionary:@{}];
   }
   return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
 }

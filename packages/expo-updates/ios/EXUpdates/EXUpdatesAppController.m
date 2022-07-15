@@ -13,12 +13,6 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
-#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
-#import <EXUpdates/EXUpdates-Swift.h>
-#else
-#import "EXUpdates-Swift.h"
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
@@ -77,7 +71,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
-    _logger = [[EXUpdatesLogger alloc] init];
   }
   return self;
 }
@@ -114,18 +107,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)start
 {
   NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
-
-  // Test writing a log message
-  [self.logger warn:@"Testing EXUpdatesLogger: EXUpdatesAppController started" code:EXUpdatesErrorCodeNone];
-
-  // Test the log reader
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-    EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
-    NSArray<NSString *> * entries = [reader getLogEntries];
-    for (NSString * entry in entries) {
-      NSLog(@"EXUpdatesLogReader: %@", entry);
-    }
-  });
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
@@ -179,7 +160,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                                selectionPolicy:self.selectionPolicy
                                                  delegateQueue:_controllerQueue];
   _loaderTask.delegate = self;
-  [self.logger timeStart:@"loaderTask"];
   [_loaderTask start];
 }
 

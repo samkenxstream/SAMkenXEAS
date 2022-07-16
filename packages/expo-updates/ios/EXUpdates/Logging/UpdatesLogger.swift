@@ -1,87 +1,20 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-// Wrapper for expo-updates to have its own Logger instance and useful methods
+// Class that implements logging for expo-updates in its own os.log category
 
 import Foundation
+import os.log
 
 import ExpoModulesCore
 
-// MARK: - Error code enum
-
-@objc(EXUpdatesErrorCode)
-public enum UpdatesErrorCode: Int {
-  case None = 0
-  case NoUpdatesAvailable = 1
-  case UpdateAssetsNotAvailable = 2
-  case UpdateServerUnreachable = 3
-  case UpdateHasIncorrectHash = 4
-  case UpdateFailedToLoad = 5
-  case AssetsFailedToLoad = 6
-  case JSRuntimeError = 7
-
-  var asString: String {
-    switch self {
-    case .None:
-      return "None"
-    case .NoUpdatesAvailable:
-      return "NoUpdatesAvailable"
-    case .UpdateAssetsNotAvailable:
-      return "UpdateAssetsNotAvailable"
-    case .UpdateServerUnreachable:
-      return "UpdateServerUnreachable"
-    case .UpdateHasIncorrectHash:
-      return "UpdateHasIncorrectHash"
-    case .UpdateFailedToLoad:
-      return "UpdateFailedToLoad"
-    case .AssetsFailedToLoad:
-      return "AssetsFailedToLoad"
-    case .JSRuntimeError:
-      return "JSRuntimeError"
-    }
-  }
-}
-
-// MARK: - Schema for JSON in log messages
-
-public struct UpdatesLogEntry: Codable {
-  var timestamp: UInt // seconds since 1/1/1970 UTC
-  var message: String
-  var code: String // One of the UpdatesErrorCode string values above
-  var level: String // One of the ExpoModulesCore.LogType string values
-  var updateId: String // EAS update ID, if any
-  var assetId: String // EAS asset ID, if any
-
-  public func asString() -> String? {
-    do {
-      let jsonEncoder = JSONEncoder()
-      let jsonData = try jsonEncoder.encode(self)
-      return String(data: jsonData, encoding: .utf8) ?? nil
-    } catch {
-      return nil
-    }
-  }
-
-  public static func create(from: String) -> UpdatesLogEntry? {
-    do {
-      let jsonDecoder = JSONDecoder()
-      guard let jsonData = from.data(using: .utf8) else { return nil }
-      let logEntry: UpdatesLogEntry = try jsonDecoder.decode(UpdatesLogEntry.self, from: jsonData)
-      return logEntry
-    } catch {
-      return nil
-    }
-  }
-}
-
-// MARK: - UpdatesLogger class
-
+@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogger)
 public class UpdatesLogger: NSObject {
-  private var logger: ExpoModulesCore.Logger
+  
+  private let osLogger: os.Logger
 
-  @objc override public init() {
-    logger = Logger(category: "expo-updates")
-    super.init()
+  public override init() {
+    osLogger = os.Logger(subsystem: "dev.expo.modules", category: "expo-updates")
   }
 
   // MARK: - Public logging functions
@@ -194,16 +127,6 @@ public class UpdatesLogger: NSObject {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(timeStart:)
-  public func timeStart(idString: String) {
-    logger.timeStart(idString)
-  }
-
-  @objc(timeEnd:)
-  public func timeEnd(idString: String) {
-    logger.timeEnd(idString)
-  }
-
   // MARK: - Private logging implementation
 
   func log(
@@ -217,11 +140,11 @@ public class UpdatesLogger: NSObject {
       timestamp: UInt(Date().timeIntervalSince1970),
       message: message,
       code: code.asString,
-      level: level.asString,
+      level: "\(level)",
       updateId: updateId ?? "",
       assetId: assetId ?? ""
     )
-    logger.log(type: level, logEntry.asString() ?? logEntry.message)
+    osLogger.log(level: level.toOSLogType(), "\(logEntry.asString() ?? logEntry.message)")
   }
 
 

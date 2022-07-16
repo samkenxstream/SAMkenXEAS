@@ -5,7 +5,7 @@ import os.log
 /**
  An enum with available log types.
  */
-@objc public enum LogType: Int {
+public enum LogType: Int {
   case trace = 0
   case timer = 1
   case stacktrace = 2
@@ -14,27 +14,6 @@ import os.log
   case warn = 5
   case error = 6
   case fatal = 7
-
-  public var asString: String {
-    switch self {
-    case .trace:
-      return "trace"
-    case .timer:
-      return "timer"
-    case .stacktrace:
-      return "stacktrace"
-    case .debug:
-      return "debug"
-    case .info:
-      return "info"
-    case .warn:
-      return "warn"
-    case .error:
-      return "error"
-    case .fatal:
-      return "fatal"
-    }
-  }
 
   /**
    The string that is used to prefix the messages of this log type.
@@ -66,7 +45,7 @@ import os.log
    Maps the log types to the log types used by the `os.log` logger.
    */
   @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
-  func toOSLogType() -> OSLogType {
+  public func toOSLogType() -> OSLogType {
     switch self {
     case .trace, .timer, .stacktrace, .debug:
       return .debug

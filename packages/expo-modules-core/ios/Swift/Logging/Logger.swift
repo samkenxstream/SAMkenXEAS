@@ -11,14 +11,11 @@ public class Logger {
   private var minLevel: LogType = .info
   #endif
 
-  private var category: String
+  private let category: String
 
   private var handlers: [LogHandler] = []
 
-  /**
-   Exposed for use by Swift wrappers
-   */
-  public init(category: String) {
+  init(category: String = "main") {
     self.category = category
 
     if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
@@ -37,14 +34,6 @@ public class Logger {
   }
 
   // MARK: - Public logging functions
-
-  /**
-   Exposed for use by Swift wrappers
-    Application code should call one of the LogType-specific methods below
-   */
-  public func log(type: LogType = .trace, _ items: Any...) {
-    log(type: type, items)
-  }
 
   /**
    The most verbose log level that captures all the details about the behavior of the implementation.
@@ -187,6 +176,10 @@ public class Logger {
         handler.log(type: type, message)
       }
     }
+  }
+
+  private func log(type: LogType = .trace, _ items: Any...) {
+    log(type: type, items)
   }
 }
 

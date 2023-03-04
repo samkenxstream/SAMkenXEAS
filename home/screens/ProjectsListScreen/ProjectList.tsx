@@ -3,7 +3,6 @@ import dedent from 'dedent';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
-import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import PrimaryButton from '../../components/PrimaryButton';
 import { ProjectsListItem } from '../../components/ProjectsListItem';
@@ -108,10 +107,14 @@ export function ProjectList(props: Props) {
 function ProjectListView({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
-  const extractKey = React.useCallback((item: CommonAppDataFragment) => item.id, []);
+  const extractKey = (item: CommonAppDataFragment) => item.id;
+
+  const currentAppCount = data.apps?.length ?? 0;
+  const totalAppCount = data.appCount ?? 0;
+  const canLoadMore = currentAppCount < totalAppCount;
 
   const handleLoadMoreAsync = async () => {
-    if (isLoading.current) return;
+    if (isLoading.current || !canLoadMore) return;
     isLoading.current = true;
 
     try {
@@ -123,24 +126,25 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
     }
   };
 
-  const currentAppCount = data.apps?.length ?? 0;
-  const totalAppCount = data.appCount ?? 0;
-  const canLoadMore = currentAppCount < totalAppCount;
-
-  const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app, index }) => {
-    return (
-      <ProjectsListItem
-        key={app.id}
-        id={app.id}
-        name={app.name}
-        imageURL={app.iconUrl || undefined}
-        subtitle={app.packageName || app.fullName}
-        sdkVersion={app.sdkVersion}
-        first={index === 0}
-        last={index === (data.apps ?? []).length - 1}
-      />
-    );
-  };
+  const renderItem: ListRenderItem<CommonAppDataFragment> = React.useCallback(
+    ({ item: app, index }) => {
+      return (
+        <ProjectsListItem
+          key={app.id}
+          id={app.id}
+          name={app.name}
+          fullName={app.fullName}
+          updateBranches={app.updateBranches}
+          imageURL={app.iconUrl || undefined}
+          subtitle={app.packageName || app.fullName}
+          sdkVersion={app.sdkVersion}
+          first={index === 0}
+          last={index === (data.apps ?? []).length - 1}
+        />
+      );
+    },
+    [data.apps]
+  );
 
   return (
     <View
@@ -154,10 +158,8 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
         renderItem={renderItem}
         contentContainerStyle={{ padding: spacing[4] }}
         ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
-        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-        canLoadMore={canLoadMore}
-        onLoadMoreAsync={handleLoadMoreAsync}
+        onEndReachedThreshold={0.2}
+        onEndReached={handleLoadMoreAsync}
       />
     </View>
   );

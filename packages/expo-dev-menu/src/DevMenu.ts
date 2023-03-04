@@ -7,12 +7,12 @@ export function openMenu(): void {
   ExpoDevMenu.openMenu();
 }
 
-export function openProfile(): void {
-  ExpoDevMenu.openProfile();
+export function hideMenu(): void {
+  ExpoDevMenu.hideMenu();
 }
 
-export function openSettings(): void {
-  ExpoDevMenu.openSettings();
+export function closeMenu(): void {
+  ExpoDevMenu.closeMenu();
 }
 
 let hasRegisteredCallbackListener = false;
@@ -41,11 +41,11 @@ export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
   }
 
   handlers = new Map();
-  const callbackNames: string[] = [];
+  const callbackNames: { name: string; shouldCollapse?: boolean }[] = [];
 
   items.forEach((item) => {
     handlers.set(item.name, item.callback);
-    callbackNames.push(item.name);
+    callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
   });
 
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);

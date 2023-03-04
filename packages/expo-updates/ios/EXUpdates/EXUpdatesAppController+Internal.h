@@ -1,9 +1,10 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
-#import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
+
+@class EXUpdatesConfig;
+@class EXUpdatesSelectionPolicy;
+@protocol EXUpdatesAppLauncher;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error;
 - (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error;
+- (void)purgeUpdatesLogsOlderThanOneDay;
 
 - (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy;
 - (void)setLauncher:(nullable id<EXUpdatesAppLauncher>)launcher;

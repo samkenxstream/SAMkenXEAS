@@ -4,8 +4,8 @@ import wrapAnsi from 'wrap-ansi';
 
 import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
@@ -18,13 +18,16 @@ export async function ensureDependenciesAsync(
     warningMessage,
     installMessage,
     // Don't prompt in CI
-    skipPrompt = env.CI,
+    skipPrompt = !isInteractive(),
+    isProjectMutable = isInteractive(),
   }: {
     exp?: ExpoConfig;
     installMessage: string;
     warningMessage: string;
     requiredPackages: ResolvedPackage[];
     skipPrompt?: boolean;
+    /** Project can be mutated in the current environment. */
+    isProjectMutable?: boolean;
   }
 ): Promise<boolean> {
   const { missing } = await getMissingPackagesAsync(projectRoot, {
@@ -42,15 +45,21 @@ export async function ensureDependenciesAsync(
 
   let title = installMessage;
 
-  if (skipPrompt) {
+  if (skipPrompt && !isProjectMutable) {
     title += '\n\n';
   } else {
-    const confirm = await confirmAsync({
-      message: wrapForTerminal(
-        title + ` Would you like to install ${chalk.cyan(readableMissingPackages)}?`
-      ),
-      initial: true,
-    });
+    let confirm = skipPrompt;
+    if (skipPrompt) {
+      // Automatically install packages without prompting.
+      Log.log(wrapForTerminal(title + ` Installing ${chalk.cyan(readableMissingPackages)}`));
+    } else {
+      confirm = await confirmAsync({
+        message: wrapForTerminal(
+          title + ` Would you like to install ${chalk.cyan(readableMissingPackages)}?`
+        ),
+        initial: true,
+      });
+    }
 
     if (confirm) {
       // Format with version if available.

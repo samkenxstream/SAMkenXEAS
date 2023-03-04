@@ -2,16 +2,16 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import assert from 'assert';
+import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
 import { APISettings } from '../../../api/settings';
 import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
-import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
   getCodeSigningInfoAsync,
@@ -21,12 +21,10 @@ import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
-import {
-  assertMissingRuntimePlatform,
-  assertRuntimePlatform,
-  parsePlatformHeader,
-} from './resolvePlatform';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
+
+const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
 interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
   explicitlyPrefersMultipartMixed: boolean;
@@ -35,8 +33,15 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
-    const platform = parsePlatformHeader(req);
-    assertMissingRuntimePlatform(platform);
+    let platform = parsePlatformHeader(req);
+
+    if (!platform) {
+      debug(
+        `No "expo-platform" header or "platform" query parameter specified. Falling back to "none".`
+      );
+      platform = 'none';
+    }
+
     assertRuntimePlatform(platform);
 
     // Expo Updates clients explicitly accept "multipart/mixed" responses while browsers implicitly
@@ -107,7 +112,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       : await this.getScopeKeyForProjectIdAsync(easProjectId);
 
     const expoUpdatesManifest: ExpoUpdatesManifest = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion,
       launchAsset: {
@@ -145,7 +150,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       manifestPartHeaders = {
         'expo-signature': serializeDictionary(
           convertToDictionaryItemsRepresentation({
-            keyid: 'expo-go',
+            keyid: codeSigningInfo.keyId,
             sig: signature,
             alg: 'rsa-v1_5-sha256',
           })
@@ -199,7 +204,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
   }
 
   protected trackManifest(version?: string) {
-    logEvent('Serve Expo Updates Manifest', {
+    logEventAsync('Serve Expo Updates Manifest', {
       runtimeVersion: version,
     });
   }

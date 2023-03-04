@@ -11,7 +11,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,9 @@ object DevMenuManager : DevMenuManagerInterface {
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
 
-  var registeredCallbacks = arrayListOf<String>()
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
+  var registeredCallbacks = arrayListOf<Callback>()
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
@@ -94,10 +95,6 @@ object DevMenuManager : DevMenuManagerInterface {
   override fun synchronizeDelegate() = Unit
 
   override fun setCurrentScreen(screen: String?) {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
-  override fun getExpoApiClient(): DevMenuExpoApiClientInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

@@ -10,11 +10,84 @@
 
 ### 💡 Others
 
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992)
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+- Fixed JSI audio sampling buffer issues when using `SimpleExoPlayer` implementation on Android. ([#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
+- Fixed compatibility with build-time React Native Web styling libraries. Removed `StyleSheet.flatten`. ([#21236](https://github.com/expo/expo/pull/21236)) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.1.0 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+
+## 13.0.2 - 2022-11-29
+
+### 🐛 Bug fixes
+
+- Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
+
+## 13.0.1 — 2022-10-30
+
+### 🎉 New features
+
+- Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
+
+## 13.0.0 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0-beta.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
+- Added `videoStyle` prop for Video component. ([#18549](https://github.com/expo/expo/pull/18549) by [@alantoa](https://github.com/alantoa))
+- Native module for video view is now written in Swift using the new API. ([#18633](https://github.com/expo/expo/pull/18633) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed promise rejection catching when `Video` is unmounted. ([#18471](https://github.com/expo/expo/pull/18471) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unnecessary CocoaPods dependency on `ReactCommon` and `React-runtimeexecutor`. ([#19067](https://github.com/expo/expo/pull/19067) by [@tsapeta](https://github.com/tsapeta))
+
+### 📚 3rd party library updates
+
+- Upgraded ExoPlayer dependencies to 2.18.1 on Android. ([#19332](https://github.com/expo/expo/pull/19332) by [@kudo](https://github.com/kudo))
+
+## 12.0.2 — 2022-07-18
+
+### 🐛 Bug fixes
+
+- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
+
 ## 12.0.1 — 2022-07-16
 
 ### 🐛 Bug fixes
 
-- Automatically unload `Video` component before React Native initiates an unmount to prevent memory leak crashes. ([#18076](https://github.com/expo/expo/pull/18173) by [@hirbod](https://github.com/hirbod) and [@Pickleboyonline](https://github.com/Pickleboyonline))
+- Automatically unload `Video` component before React Native initiates an unmount to prevent memory leak crashes. ([#18173](https://github.com/expo/expo/pull/18173) by [@hirbod](https://github.com/hirbod) and [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ## 12.0.0 — 2022-07-07
 
@@ -45,7 +118,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ## 11.2.0 — 2022-04-18
 

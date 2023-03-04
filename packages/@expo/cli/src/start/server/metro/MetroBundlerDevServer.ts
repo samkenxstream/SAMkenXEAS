@@ -1,12 +1,24 @@
+import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import chalk from 'chalk';
 
+import { Log } from '../../../log';
+import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
+import {
+  DeepLinkHandler,
+  RuntimeRedirectMiddleware,
+} from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
+
+const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -15,6 +27,8 @@ const EXPO_GO_METRO_PORT = 19000;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
+  private metro: import('metro').Server | null = null;
+
   get name(): string {
     return 'metro';
   }
@@ -49,7 +63,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       unversioned: false,
     };
 
-    const { server, middleware, messageSocket } = await instantiateMetroAsync(
+    const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
       this.projectRoot,
       parsedOptions
     );
@@ -64,14 +78,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new InterstitialPageMiddleware(this.projectRoot, {
+        // TODO: Prevent this from becoming stale.
+        scheme: options.location.scheme ?? null,
+      }).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-      onDeepLink: ({ runtime }) => {
-        // eslint-disable-next-line no-useless-return
-        if (runtime === 'expo') return;
-        // TODO: Some heavy analytics...
-      },
+      onDeepLink: getDeepLinkHandler(this.projectRoot),
       getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
           return this.urlCreator?.constructDevClientUrl();
@@ -83,6 +98,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
     });
     middleware.use(deepLinkMiddleware.getHandler());
+
+    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
@@ -98,10 +115,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     server.close = (callback?: (err?: Error) => void) => {
       return originalClose((err?: Error) => {
         this.instance = null;
+        this.metro = null;
         callback?.(err);
       });
     };
 
+    this.metro = metro;
     return {
       server,
       location: {
@@ -118,7 +137,56 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
+  public async waitForTypeScriptAsync(): Promise<void> {
+    if (!this.instance) {
+      throw new Error('Cannot wait for TypeScript without a running server.');
+    }
+    if (!this.metro) {
+      // This can happen when the run command is used and the server is already running in another
+      // process. In this case we can't wait for the TypeScript check to complete because we don't
+      // have access to the Metro server.
+      debug('Skipping TypeScript check because Metro is not running (headless).');
+      return;
+    }
+
+    const off = waitForMetroToObserveTypeScriptFile(
+      this.projectRoot,
+      { server: this.instance!.server, metro: this.metro },
+      async () => {
+        // Run once, this prevents the TypeScript project prerequisite from running on every file change.
+        off();
+        const { TypeScriptProjectPrerequisite } = await import(
+          '../../doctor/typescript/TypeScriptProjectPrerequisite'
+        );
+
+        try {
+          const req = new TypeScriptProjectPrerequisite(this.projectRoot);
+          await req.bootstrapAsync();
+        } catch (error: any) {
+          // Ensure the process doesn't fail if the TypeScript check fails.
+          // This could happen during the install.
+          Log.log();
+          Log.error(
+            chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
+          );
+          Log.exception(error);
+        }
+      }
+    );
+  }
+
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
+  return async ({ runtime }) => {
+    if (runtime === 'expo') return;
+    const { exp } = getConfig(projectRoot);
+    await logEventAsync('dev client start command', {
+      status: 'started',
+      ...getDevClientProperties(projectRoot, exp),
+    });
+  };
 }

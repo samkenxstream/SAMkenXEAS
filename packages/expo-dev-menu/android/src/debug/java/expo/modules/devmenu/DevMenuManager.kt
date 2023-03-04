@@ -21,7 +21,6 @@ import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuCallableProvider
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
@@ -33,7 +32,6 @@ import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
-import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
@@ -49,6 +47,8 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
   private var fontsWereLoaded = false
 
@@ -61,7 +61,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private lateinit var devMenuHost: DevMenuHost
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
-  private val expoApiClient = DevMenuExpoApiClient()
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
@@ -209,6 +208,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  private fun hasDisableOnboardingQueryParam(urlString: String): Boolean {
+    return urlString.contains("disableOnboarding=1")
+  }
+
   /**
    * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
@@ -230,6 +233,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
           DevMenuDefaultPreferences()
         }
       ).also {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+        it.isOnboardingFinished = true
+      }
+    }.also {
       shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
@@ -281,8 +288,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
-  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  var registeredCallbacks = arrayListOf<String>()
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty list
+  var registeredCallbacks = mutableListOf<Callback>()
 
   //endregion
 
@@ -354,19 +361,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     setCurrentScreen(null)
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
-
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("openDevMenu", null)
   }
 
   /**
-   * Sends an event to JS triggering the animation that collapses the dev menu.
+   * Triggers the animation that collapses the dev menu.
    */
   override fun closeMenu() {
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("closeDevMenu", null)
+    val activity = hostActivity as? DevMenuActivity ?: return
+    if (!activity.isDestroyed) {
+      activity.closeBottomSheet()
+    }
   }
 
   override fun hideMenu() {
@@ -477,8 +481,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
   override fun getMenuHost(): ReactNativeHost = devMenuHost
-
-  override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart

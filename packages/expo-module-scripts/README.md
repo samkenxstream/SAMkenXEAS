@@ -67,11 +67,11 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
-- [`source-login-scripts.sh`](./templates/scripts/source-login-scripts.sh): An Xcode build phase script helper for Node.js binary resolution. For example, we need to source login shell configs for `nvm`.
+- [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
 
 ### 🔌 Config Plugin
 
-To create a [config plugin](https://github.com/expo/expo-cli/blob/main/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
+To create a [config plugin](https://github.com/expo/expo/blob/main/packages/@expo/config-plugins/README.md) that automatically configures your native code, you have two options:
 
 1. Create a `plugin` folder and write your plugin in TypeScript (recommended).
 2. Create an `app.plugin.js` file in the project root and write the plugin in pure Node.js-compliant JavaScript.
@@ -144,7 +144,7 @@ Use the following scripts to interact with the plugin:
 
 ### 🤡 Jest
 
-The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
+The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) and adds proper TypeScript support and type declarations to the presets.
 
 **For unit testing API-based modules:**
 
@@ -156,15 +156,7 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/pac
 }
 ```
 
-**For unit testing component-based modules:**
-
-```json
-{
-  "jest": {
-    "preset": "expo-module-scripts/enzyme"
-  }
-}
-```
+**For unit testing component-based modules** use @testing-library/react and @testing-library/react-native.
 
 ### 📝 LICENSE
 

@@ -1,9 +1,26 @@
-import JsonFile from '@expo/json-file';
 import assert from 'assert';
+import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { getWorkspaceRoot } from './getModulesPaths';
+
+function readJsonFile(filePath: string) {
+  // Read with fs
+  const file = fs.readFileSync(filePath, 'utf8');
+  // Parse with JSON.parse
+  return JSON.parse(file);
+}
+
+function isValidJsonFile(filePath: string): boolean {
+  try {
+    // Throws if invalid or unable to read.
+    readJsonFile(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * @param workspaceProjectRoot Root file path for the yarn workspace
@@ -15,24 +32,18 @@ export function globAllPackageJsonPaths(
   linkedPackages: string[]
 ): string[] {
   return linkedPackages
-    .map(glob => {
+    .map((glob) => {
       return globSync(path.join(glob, 'package.json').replace(/\\/g, '/'), {
         cwd: workspaceProjectRoot,
         absolute: true,
         ignore: ['**/@(Carthage|Pods|node_modules)/**'],
-      }).map(pkgPath => {
-        try {
-          JsonFile.read(pkgPath);
-          return pkgPath;
-        } catch {
-          // Skip adding path if the package.json is invalid or cannot be read.
-        }
-        return null;
+      }).map((pkgPath) => {
+        return isValidJsonFile(pkgPath) ? pkgPath : null;
       });
     })
     .flat()
     .filter(Boolean)
-    .map(p => path.join(p as string));
+    .map((p) => path.join(p as string));
 }
 
 function getWorkspacePackagesArray({ workspaces }: any): string[] {
@@ -53,7 +64,7 @@ export function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot: string
   try {
     const rootPackageJsonFilePath = path.join(workspaceProjectRoot, 'package.json');
     // Could throw if package.json is invalid.
-    const rootPackageJson = JsonFile.read(rootPackageJsonFilePath);
+    const rootPackageJson = readJsonFile(rootPackageJsonFilePath);
 
     // Extract the "packages" array or use "workspaces" as packages array (yarn workspaces spec).
     const packages = getWorkspacePackagesArray(rootPackageJson);
@@ -83,7 +94,7 @@ export function getWatchFolders(projectRoot: string): string[] {
 
   return uniqueItems([
     path.join(workspaceRoot, 'node_modules'),
-    ...packages.map(pkg => path.dirname(pkg)),
+    ...packages.map((pkg) => path.dirname(pkg)),
   ]);
 }
 

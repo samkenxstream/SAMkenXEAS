@@ -1,8 +1,10 @@
 export type PageMetadata = {
   title?: string;
+  description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   maxHeadingDepth?: number;
+  iconUrl?: string;
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
   hideTOC?: boolean;
@@ -40,3 +42,9 @@ export type NavigationRoute = {
   weight?: number;
   children?: NavigationRoute[];
 };
+
+/**
+ * Available platforms supported by our APIs.
+ * Temporarily it also accepts other strings for compatibility reasons.
+ */
+export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;

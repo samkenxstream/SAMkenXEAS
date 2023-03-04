@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
-import { darkTheme, spacing } from '@expo/styleguide';
-import React from 'react';
+import { darkTheme, palette, spacing } from '@expo/styleguide';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -13,11 +12,18 @@ type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
+  includeMargin?: boolean;
   title?: string;
 };
 
-export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet style={wrapperStyle}>
+export const Terminal = ({
+  cmd,
+  cmdCopy,
+  hideOverflow,
+  includeMargin = true,
+  title = 'Terminal',
+}: TerminalProps) => (
+  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -61,7 +67,7 @@ function cmdMapper(line: string, index: number) {
 
   if (line.startsWith('#')) {
     return (
-      <CODE key={key} css={[codeStyle, unselectableStyle, { color: darkTheme.code.comment }]}>
+      <CODE key={key} css={[codeStyle, unselectableStyle, { color: palette.dark.gray10 }]}>
         {line}
       </CODE>
     );
@@ -76,7 +82,7 @@ function cmdMapper(line: string, index: number) {
             unselectableStyle,
             { display: 'inline', color: darkTheme.text.secondary },
           ]}>
-          →&nbsp;
+          -&nbsp;
         </CODE>
         <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
       </div>
@@ -102,8 +108,9 @@ const unselectableStyle = css`
 `;
 
 const codeStyle = css`
+  white-space: pre;
   display: inline-block;
-  line-height: 130%;
+  line-height: 140%;
   background-color: transparent;
   border: none;
   color: ${darkTheme.text.default};

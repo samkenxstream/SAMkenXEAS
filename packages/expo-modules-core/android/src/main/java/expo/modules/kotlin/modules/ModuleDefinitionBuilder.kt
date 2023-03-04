@@ -4,6 +4,8 @@ package expo.modules.kotlin.modules
 
 import android.app.Activity
 import android.content.Intent
+import android.view.View
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -11,8 +13,9 @@ import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
-import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
+import kotlin.reflect.KClass
 
 @DefinitionMarker
 class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
@@ -24,6 +27,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
+  @PublishedApi
+  internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
+
   fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
@@ -31,7 +37,8 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
       requireNotNull(moduleName),
       buildObject(),
       viewManagerDefinition,
-      eventListeners
+      eventListeners,
+      registerContracts
     )
   }
 
@@ -45,12 +52,12 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
-  inline fun ViewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
+  inline fun <T : View> View(viewType: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
-    val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
-    body.invoke(viewManagerDefinitionBuilder)
-    viewManagerDefinition = viewManagerDefinitionBuilder.build()
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewType)
+    body.invoke(viewDefinitionBuilder)
+    viewManagerDefinition = viewDefinitionBuilder.build()
   }
 
   /**
@@ -58,6 +65,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
    */
   inline fun OnCreate(crossinline body: () -> Unit) {
     eventListeners[EventName.MODULE_CREATE] = BasicEventListener(EventName.MODULE_CREATE) { body() }
+  }
+
+  /**
+   * Allows registration of activity contracts. It's run after `OnCreate` block.
+   */
+  fun RegisterActivityContracts(body: suspend AppContextActivityResultCaller.() -> Unit) {
+    registerContracts = body
   }
 
   /**

@@ -3,10 +3,10 @@ export default {
     openMenu() {
         throw new WebUnsupportedError();
     },
-    openProfile() {
+    closeMenu() {
         throw new WebUnsupportedError();
     },
-    openSettings() {
+    hideMenu() {
         throw new WebUnsupportedError();
     },
     addDevMenuCallbacks() {

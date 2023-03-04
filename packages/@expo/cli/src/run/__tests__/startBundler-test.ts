@@ -7,13 +7,12 @@ jest.mock('../../start/server/DevServerManager', () => ({
   DevServerManager: jest.fn(() => ({
     startAsync: jest.fn(),
     getDefaultDevServer: jest.fn(),
+    bootstrapTypeScriptAsync: jest.fn(),
   })),
 }));
 
-jest.mock('../../utils/env', () => ({
-  env: {
-    CI: false,
-  },
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
 }));
 
 jest.mock('@expo/config', () => ({

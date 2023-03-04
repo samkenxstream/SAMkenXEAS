@@ -1,11 +1,9 @@
 package expo.modules.kotlin.modules
 
 import android.os.Bundle
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 
 abstract class Module : AppContextProvider {
 
@@ -24,7 +22,6 @@ abstract class Module : AppContextProvider {
   @Suppress("PropertyName")
   @PublishedApi
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
-  val coroutineScope get() = coroutineScopeDelegate.value
 
   fun sendEvent(name: String, body: Bundle? = Bundle.EMPTY) {
     moduleEventEmitter?.emit(name, body)
@@ -35,12 +32,6 @@ abstract class Module : AppContextProvider {
   }
 
   abstract fun definition(): ModuleDefinitionData
-
-  internal fun cleanUp() {
-    if (coroutineScopeDelegate.isInitialized()) {
-      coroutineScope.cancel(ModuleDestroyedException())
-    }
-  }
 }
 
 @Suppress("FunctionName")

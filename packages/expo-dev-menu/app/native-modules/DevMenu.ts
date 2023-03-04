@@ -1,6 +1,6 @@
-import { DeviceEventEmitter, NativeModules, EventSubscription, Platform } from 'react-native';
+import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
 
-export type JSEngine = 'Hermes' | 'JSC';
+export type JSEngine = 'Hermes' | 'JSC' | 'V8';
 
 export type AppInfo = {
   appIcon?: string;
@@ -41,6 +41,10 @@ export function hideMenu(): void {
   DevMenu.hideMenu();
 }
 
+export function closeMenu(): void {
+  DevMenu.closeMenu();
+}
+
 export function subscribeToCloseEvents(listener: () => void): EventSubscription {
   return DeviceEventEmitter.addListener('closeDevMenu', listener);
 }
@@ -74,9 +78,6 @@ export async function toggleFastRefreshAsync() {
 }
 
 export async function openJSInspector() {
-  if (Platform.OS !== 'android') {
-    return;
-  }
   return await dispatchCallableAsync('js-inspector');
 }
 

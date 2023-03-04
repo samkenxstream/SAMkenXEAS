@@ -1,17 +1,25 @@
-import { css, SerializedStyles } from '@emotion/react';
+import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 type SnippetProps = {
-  style?: SerializedStyles;
+  includeMargin?: boolean;
+  className?: string;
 };
 
-export const Snippet = ({ children, style }: PropsWithChildren<SnippetProps>) => (
-  <div css={[containerStyle, css(style)]}>{children}</div>
+export const Snippet = ({
+  children,
+  className,
+  includeMargin = true,
+}: PropsWithChildren<SnippetProps>) => (
+  <div css={[containerStyle, includeMargin && containerMarginStyle]} className={className}>
+    {children}
+  </div>
 );
 
-const containerStyle = css`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: ${spacing[4]}px;
-`;
+const containerStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const containerMarginStyle = css({ marginBottom: spacing[4] });
